@@ -274,9 +274,9 @@ def get_balance_data_single(cube):
     bals = [(b.currency.symbol,
              float(b.total),
              float(b.btc_rate),
-             b.currency.percent_change_1h / 100,
-             b.currency.percent_change_24h / 100,
-             b.currency.percent_change_7d / 100)
+             b.currency.percent_change_1h / 100 if b.currency.percent_change_1h else 0,
+             b.currency.percent_change_24h / 100 if b.currency.percent_change_24h else 0,
+             b.currency.percent_change_7d / 100 if b.currency.percent_change_7d else 0)
             for b in cube.balances if (b.total > 9e-8) or (b.currency.symbol == 'BTC')]
 
     # Create Dataframe
