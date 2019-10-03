@@ -1,5 +1,5 @@
 FROM continuumio/anaconda3
-RUN apt-get update && apt-get install -y build-essential mysql-client redis-tools default-libmysqlclient-dev
+RUN apt-get update && apt-get install -y build-essential redis-tools default-libmysqlclient-dev
 
 # Python packages
 RUN conda install -c conda-forge passlib flask-login flask-wtf flask-mail celery requests
