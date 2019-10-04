@@ -1,3 +1,5 @@
+pandas
+marshmallow
 flask-user==0.6.17
 flask-restful
 flask-apispec
@@ -13,4 +15,3 @@ hvac
 onetimepass
 requests
 pymysql
-pycryptodome
