@@ -135,7 +135,7 @@ def create_series_chart(df):
     return [list(p) for p in df.iteritems() if not math.isnan(p[1])]
 
 
-def get_balance_data(cubes):
+def get_balance_data(user, cubes):
     app.logger.debug("Start get_balance_data()")
     app.logger.debug(datetime.utcnow())
     # Child rows for per exchange balances
@@ -161,6 +161,7 @@ def get_balance_data(cubes):
             btc_rate.append(1)
         else:
             cur = Currency.query.filter_by(symbol=symbol).first()
+            print(cur)
             if not cur:
                 btc_rate.append(0)
                 continue
@@ -168,10 +169,13 @@ def get_balance_data(cubes):
                                                    base_currency_id=cur.id,
                                                    active=True).first()
 
+            print(index_pair)
+
             if not index_pair:
                 index_pair = IndexPair.query.filter_by(quote_symbol=symbol,
                                                        base_symbol='BTC',
                                                        active=True).first()
+                print(index_pair)
 
                 if not index_pair:
                     print('No index for', symbol)
@@ -187,12 +191,14 @@ def get_balance_data(cubes):
                     rate = round(1 / btc_fiat, 8)
                 else:
                     rate = 0
+                print(rate)
                 btc_rate.append(rate)
             else:
                 try:
                     rate = index_pair.index_pair_close[0].close
                 except:
                     rate = 0
+                print(rate)
                 btc_rate.append(rate)
             app.logger.debug(index_pair)
     app.logger.debug("Retrieved BTC rates")
@@ -202,7 +208,7 @@ def get_balance_data(cubes):
     # Find btc_fiat rate if not in bals
     fiat = IndexPair.query.filter_by(
         base_symbol='BTC',
-        quote_symbol='USDT'
+        quote_currency_id=user.fiat_id
     ).first()
     try:
         selected_btc_fiat = fiat.index_pair_close[0].close

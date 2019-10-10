@@ -12,7 +12,7 @@ from marshmallow import missing
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
                                 jwt_required, jwt_refresh_token_required, 
                                 get_jwt_identity, get_raw_jwt)
-from database import User, RevokedToken, app
+from database import Currency, User, RevokedToken, app
 from .tools import security
 
 api = Api(app)
@@ -55,11 +55,12 @@ class Register(MethodResource):
         else:
             if username == missing:
                 username = 'Satoshi'
+            cur = Currency.query.filter_by(symbol='USD').first()
             user = User(
                 email=email,
                 password=password,
                 first_name=username,
-                fiat_id=7, # USDT
+                fiat_id=cur.id, # USD
                 agreement=1,
                 email_confirmed=1,
                 btc_data=1

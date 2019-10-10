@@ -6,7 +6,7 @@ from flask_restful import abort
 from flask_bcrypt import generate_password_hash
 from webargs import fields, validate
 from webargs.flaskparser import use_kwargs
-from database import (Algorithm, Cube, Exchange,
+from database import (Algorithm, Cube, Currency, Exchange,
                       User, UserApiKey, UserNotification)
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from .tools.account import delete_user, reset_user
@@ -46,7 +46,7 @@ class AccountBalances(MethodResource):
                             func.length(Cube.balances) > 0,
                             )).all()
             if cubes:
-                balances, total = get_balance_data(cubes)
+                balances, total = get_balance_data(user, cubes)
                 allocations = asset_allocations_from_balances_all(balances)
                 return {
                     'balances': balances, 
@@ -312,7 +312,8 @@ class SaveUserSetting(MethodResource):
             if name in ["btc_data", "wide_charts", "portfolio"]:
                 setattr(user, name, bool_value)
             elif name in ["fiat_id"]:
-                setattr(user, name, value)
+                cur = Currency.query.filter_by(symbol=value).first()
+                setattr(user, name, cur.id)
             elif name in ["news", "alerts"]:
                 setattr(user, name, bool_value)
                 user.save_to_db()
