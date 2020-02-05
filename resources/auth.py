@@ -30,6 +30,8 @@ def login_user(user):
     user.save_to_db()
     access_token = create_access_token(identity = user.email)
     refresh_token = create_refresh_token(identity = user.email)
+    print(access_token)
+    print(refresh_token)
     resp = make_response(user.role, 200)
     resp.headers.extend({'authorization': {
         'access_token': access_token,
@@ -135,6 +137,7 @@ class Login(MethodResource):
     @doc(tags=['Authentication'], description='Login to account. Must post credentials in body.')
     def post(self, email, password):
         user = User.query.filter_by(email=email).first()
+        print(user)
         if user is None:
             message = 'There is no account associated with this email address.'
             abort(401, message=message)
@@ -146,6 +149,7 @@ class Login(MethodResource):
                     user_id = user.id
                     timestamp = int(time())
                     token = md5(('{}.{}.{}'.format(user_id, timestamp, SECRET)).encode()).hexdigest()
+                    print(token)
                     second_factor = {
                         'user_id': user_id,
                         'timestamp': timestamp,
